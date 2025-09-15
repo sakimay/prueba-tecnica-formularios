@@ -1,11 +1,16 @@
-<script setup></script>
+<script setup>
+import Header from './components/Header.vue'
+</script>
 
 <template>
-  <h1>You did it!</h1>
-  <p>
-    Visit <a href="https://vuejs.org/" target="_blank" rel="noopener">vuejs.org</a> to read the
-    documentation
-  </p>
+  <Header />
+  <main class="mt-16">
+    <section class="background-hero">
+      <h1>Prueba Técnica</h1>
+      <h2>Formularios dinámicos</h2>
+    </section>
+  </main>
+  <footer></footer>
 </template>
 
 <style scoped></style>
