@@ -25,7 +25,18 @@
   font-family: 'Ubuntu', sans-serif;
 }
 
-
 body {
   @apply bg-gray-100 text-gray-900;
+}
+
+.custom-form {
+  @apply flex flex-col gap-6 w-full bg-white shadow-lg rounded-lg;
+}
+
+.custom-form .custom-input {
+  @apply w-full p-2 border border-gray-300 rounded;
+}
+
+.custom-button-submit {
+    @apply bg-blue-600 text-white px-8 py-2 rounded hover:bg-blue-700 transition text-2xl;
 }
