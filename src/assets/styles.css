@@ -1,33 +1,31 @@
-@import "tailwindcss";
+@import 'tailwindcss';
+@import '@fontsource/ubuntu/400.css';
+@import '@fontsource/ubuntu/500.css';
+@import '@fontsource/ubuntu/700.css';
 
 :root {
-    --primary: #161b6d;
-    --secondary: #1843e7;
-    --text-primary: #ffffff;
+  --primary: #161b6d;
+  --secondary: #1843e7;
+  --color-primary: #ffffff;
 }
 
 .background-hero {
-    background-color: var(--primary);
-    color: var(--text-primary);
+  background-color: var(--primary);
+  color: var(--color-primary);
 }
 
-
-h1, h2, h3, h4, h5, h6 {
-  @apply font-bold;
+.text-white {
+  color: var(--color-primary);
+}
+.text-secondary {
+  color: var(--secondary);
 }
 
-h1{
-    @apply text-3xl;
+* {
+  font-family: 'Ubuntu', sans-serif;
 }
 
-h2, h3 {
-    @apply text-2xl;
-}
-
-h4, h5, h6 {
-    @apply text-xl;
-}
 
 body {
-    @apply bg-gray-100 text-gray-900;
+  @apply bg-gray-100 text-gray-900;
 }
