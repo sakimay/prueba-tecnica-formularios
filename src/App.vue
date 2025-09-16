@@ -20,7 +20,7 @@
 
             <div v-if="['text', 'email', 'password', 'date', 'file'].includes(question.type)" class="input-group">
               <label class="custom-label" :for="`q_${question.id}`">
-                {{ question.label }} <span v-if="question.validation?.required">*</span> 
+                {{ question.label }} <span v-if="question.validation?.required" aria-hidden="true">*</span> 
                 <span v-if="question.type == 'file'" class="text-gray-500 font-light italic">({{ question.validation?.accept.join(', ') }})</span>
               </label>
               <input 
@@ -32,11 +32,11 @@
                 :class="{ 'custom-input-error': !!errors[question.id] }" 
                 @input="errors[question.id] = validateField(question)"  
               />
-              <span v-if="errors[question.id]" class="custom-error">{{ errors[question.id] }}</span>
+              <span v-if="errors[question.id]" class="custom-error" aria-live="polite">{{ errors[question.id] }}</span>
             </div>
 
             <div v-else-if="question.type === 'textarea'" class="input-group">
-              <label class="custom-label" :for="`q_${question.id}`">{{ question.label }} <span v-if="question.validation?.required">*</span></label>
+              <label class="custom-label" :for="`q_${question.id}`">{{ question.label }} <span v-if="question.validation?.required" aria-hidden="true">*</span></label>
               <textarea 
                 :placeholder="question.placeholder || ''" 
                 class="custom-input"
@@ -46,14 +46,14 @@
                 @input="errors[question.id] = validateField(question)"
               ></textarea>
               <div class="flex justify-between items-center">
-                <span v-if="errors[question.id]" class="custom-error">{{ errors[question.id] }}</span>
+                <span v-if="errors[question.id]" class="custom-error" aria-live="polite">{{ errors[question.id] }}</span>
                 <span v-else></span>
                 <span class="text-gray-500">{{ formData[question.id].length }} / {{ question.validation.maxLength }}</span>
               </div>
             </div>
 
             <div v-else-if="question.type === 'select'" class="input-group">
-              <label class="custom-label" :for="`q_${question.id}`">{{ question.label }} <span v-if="question.validation?.required">*</span></label>
+              <label class="custom-label" :for="`q_${question.id}`">{{ question.label }} <span v-if="question.validation?.required" aria-hidden="true">*</span></label>
               <select 
                 class="custom-input" 
                 :id="`q_${question.id}`"
@@ -68,12 +68,12 @@
                 >{{ option }}
                 </option>
               </select>
-              <span v-if="errors[question.id]" class="custom-error">{{ errors[question.id] }}</span>
+              <span v-if="errors[question.id]" class="custom-error" aria-live="polite">{{ errors[question.id] }}</span>
             </div>
 
             <div v-else-if="question.type === 'radio'" class="input-group">
-              <div :aria-label="question.label" role="group">
-                <legend class="custom-label">{{ question.label }} <span v-if="question.validation?.required">*</span></legend>
+              <fieldset :aria-label="question.label" role="group">
+                <legend class="custom-label">{{ question.label }} <span v-if="question.validation?.required" aria-hidden="true">*</span></legend>
                 <div v-for="(option, optIndex) in question.options" :key="optIndex" class="flex items-center">
                   <input 
                     type="radio" 
@@ -87,8 +87,8 @@
                   />
                   <label :for="`q_${question.id}_opt${optIndex}`">{{ option }}</label>
                 </div>
-                <span v-if="errors[question.id]" class="custom-error">{{ errors[question.id] }}</span>
-              </div>
+                <span v-if="errors[question.id]" class="custom-error" aria-live="polite">{{ errors[question.id] }}</span>
+              </fieldset>
             </div>
 
             <div v-else-if="question.type === 'checkbox'" class="input-group">
@@ -104,7 +104,7 @@
                 />
                 <label class="custom-label" :for="`q_${question.id}`">{{ question.label }}</label>
               </div>
-              <span v-if="errors[question.id]" class="custom-error">{{ errors[question.id] }}</span>
+              <span v-if="errors[question.id]" class="custom-error" aria-live="polite">{{ errors[question.id] }}</span>
             </div>
 
           </div>
