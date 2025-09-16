@@ -17,7 +17,7 @@
 
           <div v-for="(question, index) in questions" :key="index" class="input-group" :class="question.type">
 
-            <template v-if="['text', 'email', 'password', 'date', 'file'].includes(question.type)">
+            <div v-if="['text', 'email', 'password', 'date', 'file'].includes(question.type)" class="input-group">
               <label class="custom-label" :for="`q_${question.id}`">{{ question.label }}</label>
               <input 
                 :type="question.type" 
@@ -25,12 +25,13 @@
                 class="custom-input" 
                 :id="`q_${question.id}`"
                 v-model="formData[question.id]"
-                :class="{ 'custom-input-error': !!errors[question.id] }"
+                :class="{ 'custom-input-error': !!errors[question.id] }" 
+                @input="errors[question.id] = validateField(question)"  
               />
               <span v-if="errors[question.id]" class="custom-error">{{ errors[question.id] }}</span>
-            </template>
+            </div>
 
-            <template v-else-if="question.type === 'textarea'">
+            <div v-else-if="question.type === 'textarea'" class="input-group">
               <label class="custom-label" :for="`q_${question.id}`">{{ question.label }}</label>
               <textarea 
                 :placeholder="question.placeholder || ''" 
@@ -38,19 +39,20 @@
                 :id="`q_${question.id}`"
                 v-model="formData[question.id]"
                 :class="{ 'custom-input-error': !!errors[question.id] }"
-              >{{ question.placeholder }}</textarea>
+                @input="errors[question.id] = validateField(question)"
+              ></textarea>
               <span v-if="errors[question.id]" class="custom-error">{{ errors[question.id] }}</span>
-            </template>
+            </div>
 
-            <template  v-else-if="question.type === 'select'">
+            <div v-else-if="question.type === 'select'" class="input-group">
               <label class="custom-label" :for="`q_${question.id}`">{{ question.label }}</label>
               <select 
                 class="custom-input" 
                 :id="`q_${question.id}`"
                 v-model="formData[question.id]"
                 :class="{ 'custom-input-error': !!errors[question.id] }"
+                @change="errors[question.id] = validateField(question)"
               >
-                <option value="">{{ question.placeholder }}</option>
                 <option 
                   v-for="(option, optIndex) in question.options" 
                   :key="optIndex" 
@@ -59,41 +61,47 @@
                 </option>
               </select>
               <span v-if="errors[question.id]" class="custom-error">{{ errors[question.id] }}</span>
-            </template>
+            </div>
 
-            <template  v-else-if="question.type === 'radio'" class="flex flex-col gap-2">
-              <p class="custom-label">{{ question.label }}</p>
-              <div v-for="(option, optIndex) in question.options" :key="optIndex" class="flex items-center">
-                <input 
-                  type="radio" 
-                  :id="`q_${question.id}_opt${optIndex}`" 
-                  :name="`q_${question.id}`" 
-                  :value="option"
-                  class="custom-input"
+            <div v-else-if="question.type === 'radio'" class="input-group">
+              <div :aria-label="question.label" role="group">
+                <legend class="custom-label">{{ question.label }}</legend>
+                <div v-for="(option, optIndex) in question.options" :key="optIndex" class="flex items-center">
+                  <input 
+                    type="radio" 
+                    :id="`q_${question.id}_opt${optIndex}`" 
+                    :name="`q_${question.id}`" 
+                    :value="option"
+                    class="custom-input"
+                    v-model="formData[question.id]"
+                    :class="{ 'custom-input-error': !!errors[question.id] }"
+                    @change="errors[question.id] = validateField(question)"
+                  />
+                  <label :for="`q_${question.id}_opt${optIndex}`">{{ option }}</label>
+                </div>
+                <span v-if="errors[question.id]" class="custom-error">{{ errors[question.id] }}</span>
+              </div>
+            </div>
+
+            <div v-else-if="question.type === 'checkbox'" class="input-group">
+              <div :aria-label="question.label" role="group" class="flex items-center">
+                <input
+                  :type="question.type" 
+                  :placeholder="question.placeholder || ''" 
+                  class="custom-input" 
+                  :id="`q_${question.id}`" 
                   v-model="formData[question.id]"
                   :class="{ 'custom-input-error': !!errors[question.id] }"
+                  @change="errors[question.id] = validateField(question)"
                 />
-                <label :for="`q_${question.id}_opt${optIndex}`">{{ option }}</label>
+                <label class="custom-label" :for="`q_${question.id}`">{{ question.label }}</label>
               </div>
               <span v-if="errors[question.id]" class="custom-error">{{ errors[question.id] }}</span>
-            </template>
-
-            <template  v-else-if="question.type === 'checkbox'" class="flex gap-2 items-center">
-              <input
-                :type="question.type" 
-                :placeholder="question.placeholder || ''" 
-                class="custom-input" 
-                :id="`q_${question.id}`" 
-                v-model="formData[question.id]"
-                :class="{ 'custom-input-error': !!errors[question.id] }"
-              />
-              <label class="custom-label" :for="`q_${question.id}`">{{ question.label }}</label>
-              <span v-if="errors[question.id]" class="custom-error">{{ errors[question.id] }}</span>
-            </template>
+            </div>
 
           </div>
           <div class="p-6 flex justify-center">
-            <button class="custom-button-submit">Enviar</button>
+            <button class="custom-button-submit" :disabled="!validateForm()">Enviar</button>
           </div>
 
         </form>
@@ -107,69 +115,64 @@
 <script setup>
 import Header from './components/Header.vue'
 import questions from '@/config/questions.json'
-import { reactive, watch } from 'vue'
+import { reactive } from 'vue'
 
 const formData = reactive({})
 const errors = reactive({})
 
-questions.forEach(field => {
-  if(field.type === 'checkbox') formData[field.id] = false
-  else formData[field.id] = ''
-
-  // Watch individual
-  watch(
-    () => formData[field.id],
-    () => { errors[field.id] = '' } // limpia error al escribir/cambiar
-  )
-})
+questions.forEach(f => formData[f.id] = f.type === "checkbox" ? false : "")
 
 // Validación simple
-function validateField(field) {
+const validateField = (field) => {
   const value = formData[field.id]
-  const v = field.validation || {}
+  const validation = field.validation || {}
   let error = ''
 
-  if(v.required) {
+  // Validación de required
+  if(validation.required) {
     if(field.type === 'checkbox' && !value) error = 'Este campo es obligatorio'
     else if(!value) error = 'Este campo es obligatorio'
   }
 
-  if(!error && v.minLength && value.length < v.minLength)
-    error = `Mínimo ${v.minLength} caracteres`
+  // Validación de minLength
+  if(!error && validation.minLength && value.length < validation.minLength)
+    error = `Mínimo ${validation.minLength} caracteres`
 
-  if(!error && v.maxLength && value.length > v.maxLength)
-    error = `Máximo ${v.maxLength} caracteres`
+  // Validación de maxLength
+  if(!error && validation.maxLength && value.length > validation.maxLength)
+    error = `Máximo ${validation.maxLength} caracteres`
 
-  if(!error && v.pattern) {
-    const regex = new RegExp(v.pattern)
-    if(!regex.test(value) && field.type == 'password') error = 'La contraseña debe tener al menos 8 caracteres, una mayúscula, un número y un carácter especial.'
-    else if(!regex.test(value) && field.type == 'email') error = 'Formato del email inválido'
-    else if(!regex.test(value) && field.id == 1) error = 'El nombre no debe contener números ni caracteres especiales.'
-    else error = 'Formato inválido'
+  // Validación de pattern
+  if(!error && validation.pattern) {
+    const regex = new RegExp(validation.pattern)
+    if(value && !regex.test(value) && field.type == 'password') error = 'La contraseña debe tener al menos 8 caracteres, una mayúscula, un número y un carácter especial.'
+    if(value && !regex.test(value) && field.type == 'email') error = 'Formato del email inválido'
+    if(value && !regex.test(value.trim()) && field.id == 1) error = 'El nombre no debe contener números ni caracteres especiales.'
   }
 
   // Validación de matchField
-  if(!error && v.matchField) {
-    if(value !== formData[v.matchField]) error = 'No coincide con ' + v.matchField
+  if(!error && validation.matchField) {
+    const targetField = questions.find(f => f.label === validation.matchField)
+    if(value !== formData[targetField.id]) error = 'No coincide con ' + validation.matchField
   }
 
   // Validación minAge para fechas
-  if(!error && v.minAge && field.type === 'date') {
+  if(!error && validation.minAge && field.type === 'date') {
     const today = new Date()
     const birth = new Date(value)
     const age = today.getFullYear() - birth.getFullYear()
-    if(age < v.minAge) error = `Debes tener al menos ${v.minAge} años`
+    if(age < validation.minAge) error = `Debes tener al menos ${validation.minAge} años`
   }
 
   // Validación de accept para archivos
-  if (!error && v.accept && field.type === 'file') {
+  if (!error && validation.accept && field.type === 'file') {
     const input = document.getElementById(`q_${field.id}`)
     const file = input?.files?.[0]
 
     if (file) {
       const extension = '.' + file.name.split('.').pop().toLowerCase()
-      if (!v.accept.map(ext => ext.toLowerCase()).includes(extension)) {
-        error = 'Formato de archivo inválido. Solo se permiten: ' + v.accept.join(', ')
+      if (!validation.accept.map(ext => ext.toLowerCase()).includes(extension)) {
+        error = 'Formato de archivo inválido. Solo se permiten: ' + validation.accept.join(', ')
       }
     }
   }
@@ -177,22 +180,21 @@ function validateField(field) {
   return error
 }
 
-const handleSubmit = () => {
-  Object.keys(errors).forEach(key => errors[key] = '')
-  console.log(formData)
-
-  let hasError = false
+const validateForm = () => {
+  let valid = true;
   questions.forEach(field => {
-    const error = validateField(field)
-    if(error) {
-      errors[field.id] = error
-      hasError = true
-    }
-  })
+    if (validateField(field)) valid = false;
+  });
+  return valid;
+};
 
-  if(!hasError) {
-    console.log('Formulario enviado:', JSON.parse(JSON.stringify(formData)))
-    alert('Formulario enviado! Revisa la consola.')
+
+const handleSubmit = () => {
+  if (validateForm()) {
+    alert("Formulario válido");
+    console.log("Datos:", formData);
+  } else {
+    alert("Hay errores en el formulario");
   }
 }
 </script>
