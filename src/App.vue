@@ -204,7 +204,7 @@ const validateForm = () => {
 
 const handleSubmit = () => {
   if (validateForm()) {
-    alert("Formulario válido");
+    alert("Formulario válido enviado");
     console.log("Datos:", formData);
   } else {
     alert("Hay errores en el formulario");
