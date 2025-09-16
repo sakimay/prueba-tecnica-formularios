@@ -118,7 +118,11 @@
 
     </section>
   </main>
-  <footer></footer>
+  <footer>
+    <div class="container p-4 md:p-10 max-w-7xl mx-auto flex justify-center">
+      <span class="text-gray-500">Desarrollado por &copy; <a href="https://www.linkedin.com/in/isaac-mayne-perez/" target="_blank" class="text-blue-600 hover:underline">Isaac Mayné Pérez</a></span>
+    </div>
+  </footer>
 </template>
 
 <script setup>
