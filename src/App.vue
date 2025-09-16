@@ -41,7 +41,11 @@
                 :class="{ 'custom-input-error': !!errors[question.id] }"
                 @input="errors[question.id] = validateField(question)"
               ></textarea>
-              <span v-if="errors[question.id]" class="custom-error">{{ errors[question.id] }}</span>
+              <div class="flex justify-between items-center">
+                <span v-if="errors[question.id]" class="custom-error">{{ errors[question.id] }}</span>
+                <span v-else></span>
+                <span class="text-gray-500">{{ formData[question.id].length }} / {{ question.validation.maxLength }}</span>
+              </div>
             </div>
 
             <div v-else-if="question.type === 'select'" class="input-group">
