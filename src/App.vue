@@ -207,5 +207,3 @@ const handleSubmit = () => {
   }
 }
 </script>
-
-<style scoped></style>
