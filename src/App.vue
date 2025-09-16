@@ -18,7 +18,10 @@
           <div v-for="(question, index) in questions" :key="index" class="input-group" :class="question.type">
 
             <div v-if="['text', 'email', 'password', 'date', 'file'].includes(question.type)" class="input-group">
-              <label class="custom-label" :for="`q_${question.id}`">{{ question.label }}</label>
+              <label class="custom-label" :for="`q_${question.id}`">
+                {{ question.label }} <span v-if="question.validation?.required">*</span> 
+                <span v-if="question.type == 'file'" class="text-gray-500 font-light italic">({{ question.validation?.accept.join(', ') }})</span>
+              </label>
               <input 
                 :type="question.type" 
                 :placeholder="question.placeholder || ''"
@@ -32,7 +35,7 @@
             </div>
 
             <div v-else-if="question.type === 'textarea'" class="input-group">
-              <label class="custom-label" :for="`q_${question.id}`">{{ question.label }}</label>
+              <label class="custom-label" :for="`q_${question.id}`">{{ question.label }} <span v-if="question.validation?.required">*</span></label>
               <textarea 
                 :placeholder="question.placeholder || ''" 
                 class="custom-input"
@@ -49,7 +52,7 @@
             </div>
 
             <div v-else-if="question.type === 'select'" class="input-group">
-              <label class="custom-label" :for="`q_${question.id}`">{{ question.label }}</label>
+              <label class="custom-label" :for="`q_${question.id}`">{{ question.label }} <span v-if="question.validation?.required">*</span></label>
               <select 
                 class="custom-input" 
                 :id="`q_${question.id}`"
@@ -69,7 +72,7 @@
 
             <div v-else-if="question.type === 'radio'" class="input-group">
               <div :aria-label="question.label" role="group">
-                <legend class="custom-label">{{ question.label }}</legend>
+                <legend class="custom-label">{{ question.label }} <span v-if="question.validation?.required">*</span></legend>
                 <div v-for="(option, optIndex) in question.options" :key="optIndex" class="flex items-center">
                   <input 
                     type="radio" 
@@ -108,6 +111,7 @@
             <button class="custom-button-submit" :disabled="!validateForm()">Enviar</button>
           </div>
 
+          <span class="text-gray-500 font-light italic">* Campos obligatorios</span>
         </form>
       </div>
 
