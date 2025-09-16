@@ -14,6 +14,7 @@
     <section>
       <div class="container p-4 md:p-10 max-w-3xl mx-auto flex">
         <form class="custom-form" @submit.prevent="handleSubmit">
+          <h3 class="text-xl font-semibold mb-4">Formulario de registro</h3>
 
           <div v-for="(question, index) in questions" :key="index" class="input-group" :class="question.type">
 
