@@ -45,6 +45,7 @@
       "id": 5,
       "label": "País",
       "type": "select",
+      "placeholder": "Selecciona un País",
       "options": ["México", "Colombia", "Perú", "Argentina", "Chile"],
       "validation": {
         "required": true
